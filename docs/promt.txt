@@ -1,0 +1,640 @@
+# REQUERIMIENTO — DASHBOARD WEB CON REACT + VITE ALIMENTADO DESDE EXCEL
+
+Asume el rol de un **Senior Full Stack Developer / Software Architect**, con experiencia en **React, Vite, TypeScript, dashboards empresariales, procesamiento de archivos Excel y diseño UI/UX profesional**.
+
+Necesito desarrollar una aplicación web tipo **Dashboard Empresarial**, cuyo origen de datos será un archivo Excel llamado:
+
+**`mejora.xlsx`**
+
+La aplicación debe permitir cargar, leer, procesar y visualizar la información contenida en dicho Excel mediante indicadores, gráficos, tablas y filtros interactivos.
+
+---
+
+## 1. STACK TECNOLÓGICO
+
+Construye el frontend utilizando:
+
+* React
+* Vite
+* TypeScript
+* Tailwind CSS
+* Recharts o una librería equivalente para gráficos
+* SheetJS / `xlsx` para lectura del Excel
+* Lucide React para iconos
+* Componentes reutilizables
+* Diseño responsive
+
+No crear una solución improvisada. La estructura debe ser escalable y preparada para posteriormente conectar una API/backend.
+
+---
+
+## 2. OBJETIVO PRINCIPAL
+
+Crear un dashboard moderno, profesional y fácil de utilizar que:
+
+1. Permita cargar el archivo Excel `mejora.xlsx`.
+2. Lea automáticamente sus hojas.
+3. Detecte las columnas disponibles.
+4. Procese los datos.
+5. Muestre indicadores KPI.
+6. Genere gráficos automáticamente a partir de los datos.
+7. Permita filtrar la información.
+8. Muestre una tabla detallada.
+9. Permita visualizar tendencias y distribuciones.
+10. Permita actualizar el dashboard cuando se cargue un nuevo Excel.
+11. No dependa de datos escritos manualmente dentro del código.
+
+**IMPORTANTE:** El Excel será la fuente principal de información. Los datos del dashboard deben generarse dinámicamente a partir de él.
+
+---
+
+## 3. CARGA DEL EXCEL
+
+Crear un componente de carga de archivos con:
+
+* Drag & Drop.
+* Botón "Seleccionar Excel".
+* Validación de extensión `.xlsx` y `.xls`.
+* Indicador de carga/procesamiento.
+* Mensaje de error si el archivo no es válido.
+* Nombre del archivo cargado.
+* Fecha/hora de procesamiento.
+* Botón para reemplazar el archivo.
+
+Ejemplo visual:
+
+> Arrastra tu archivo Excel aquí
+> o
+> **Seleccionar archivo**
+
+Una vez cargado:
+
+> Archivo procesado correctamente
+> `mejora.xlsx`
+> X registros encontrados
+
+---
+
+## 4. PROCESAMIENTO DEL EXCEL
+
+Implementar una capa independiente para procesar el Excel.
+
+Crear funciones similares a:
+
+```text
+readExcelFile()
+parseExcelData()
+normalizeExcelData()
+detectColumns()
+calculateKPIs()
+buildChartData()
+```
+
+No mezclar toda la lógica dentro de los componentes React.
+
+La aplicación debe:
+
+* Detectar automáticamente las hojas.
+* Identificar encabezados.
+* Limpiar valores vacíos.
+* Normalizar fechas.
+* Normalizar números.
+* Evitar errores por celdas vacías.
+* Detectar columnas numéricas.
+* Detectar columnas de texto.
+* Detectar columnas de fecha.
+* Calcular estadísticas.
+
+Si el Excel contiene varias hojas, mostrar un selector para elegir la hoja que alimentará el dashboard.
+
+---
+
+# 5. ESTRUCTURA DEL DASHBOARD
+
+Crear un layout empresarial moderno.
+
+### Sidebar
+
+Debe contener:
+
+* Dashboard
+* Datos
+* Análisis
+* Configuración
+
+Y en la parte inferior:
+
+* Archivo cargado
+* Estado del archivo
+
+### Header
+
+Mostrar:
+
+* Título del dashboard
+* Nombre del archivo actual
+* Última actualización
+* Botón "Actualizar"
+* Botón "Cargar Excel"
+
+---
+
+# 6. KPIs
+
+Crear tarjetas superiores para mostrar los principales indicadores.
+
+Ejemplos:
+
+### Total registros
+
+Cantidad total de filas procesadas.
+
+### Registros activos / aprobados
+
+Si existe una columna relacionada con estado, calcular automáticamente.
+
+### Registros pendientes
+
+Cantidad de registros pendientes.
+
+### Promedio
+
+Promedio de las columnas numéricas relevantes.
+
+### Total
+
+Suma de las variables numéricas relevantes.
+
+Los KPIs deben adaptarse a las columnas existentes.
+
+No colocar valores ficticios.
+
+Si una métrica no puede calcularse porque el Excel no tiene la información necesaria, ocultarla o mostrar:
+
+> No disponible
+
+---
+
+# 7. FILTROS
+
+Crear una sección de filtros dinámica.
+
+Los filtros deben construirse dependiendo de las columnas existentes.
+
+Por ejemplo:
+
+* Fecha
+* Estado
+* Área
+* Responsable
+* Proveedor
+* Categoría
+* Tipo
+* etc.
+
+Incluir:
+
+* Select
+* Multiselect cuando sea necesario
+* Rango de fechas
+* Búsqueda
+* Botón "Limpiar filtros"
+
+Todos los gráficos, KPIs y tablas deben actualizarse según los filtros seleccionados.
+
+---
+
+# 8. GRÁFICOS
+
+Crear diferentes visualizaciones dependiendo de los datos encontrados.
+
+Como mínimo:
+
+### Gráfico de barras
+
+Para comparar categorías.
+
+### Gráfico de líneas
+
+Para mostrar evolución temporal.
+
+### Gráfico circular / donut
+
+Para distribución por estado o categoría.
+
+### Gráfico de área
+
+Para tendencias.
+
+No generar gráficos sin sentido.
+
+La aplicación debe analizar las columnas disponibles y utilizar las visualizaciones apropiadas.
+
+Cada gráfico debe tener:
+
+* Título
+* Subtítulo descriptivo
+* Leyenda
+* Tooltip
+* Valores
+* Responsive
+* Opción de ocultar/mostrar series cuando corresponda
+
+---
+
+# 9. TABLA DE DATOS
+
+Crear una tabla profesional con:
+
+* Todas las columnas disponibles.
+* Ordenamiento.
+* Búsqueda.
+* Paginación.
+* Cantidad de registros por página.
+* Filtros.
+* Scroll horizontal.
+* Columnas sticky cuando sea necesario.
+
+Mostrar algo como:
+
+```text
+Mostrando 1-25 de 1,250 registros
+```
+
+La tabla debe funcionar correctamente incluso con miles de registros.
+
+Evitar renderizar innecesariamente todos los registros si el volumen es grande.
+
+---
+
+# 10. PANEL DE ANÁLISIS
+
+Crear una sección llamada:
+
+**Análisis**
+
+Debe mostrar automáticamente información útil derivada del Excel.
+
+Por ejemplo:
+
+* Categoría con mayor cantidad de registros.
+* Estado predominante.
+* Evolución mensual.
+* Promedios.
+* Totales.
+* Valores máximos y mínimos.
+* Distribuciones.
+* Comparaciones.
+
+También mostrar pequeñas conclusiones automáticas como:
+
+> La categoría X representa el 38% del total de registros.
+
+> Durante agosto se registró un incremento del 15%.
+
+Estas conclusiones deben calcularse dinámicamente y nunca estar escritas manualmente.
+
+---
+
+# 11. DISEÑO UI/UX
+
+Quiero un diseño:
+
+* Profesional
+* Corporativo
+* Moderno
+* Limpio
+* Minimalista
+* Fácil de interpretar
+* Responsive
+
+Debe funcionar correctamente en:
+
+* Desktop
+* Laptop
+* Tablet
+
+Utilizar:
+
+* Cards
+* Bordes suaves
+* Sombras discretas
+* Espaciado consistente
+* Tipografía profesional
+* Iconografía clara
+
+Evitar un diseño excesivamente colorido.
+
+Priorizar la visualización de información.
+
+---
+
+# 12. ESTADOS DE LA APLICACIÓN
+
+Implementar correctamente:
+
+### Estado inicial
+
+Cuando todavía no existe Excel cargado:
+
+> No hay información disponible
+
+y mostrar el componente de carga.
+
+### Loading
+
+Mientras se procesa:
+
+> Procesando archivo...
+
+con indicador visual.
+
+### Error
+
+Si ocurre un problema:
+
+> No fue posible procesar el archivo.
+
+Mostrar una explicación entendible.
+
+### Éxito
+
+Mostrar:
+
+> Archivo procesado correctamente.
+
+---
+
+# 13. ARQUITECTURA DEL PROYECTO
+
+Utilizar una estructura organizada similar a:
+
+```text
+src/
+├── components/
+│   ├── dashboard/
+│   │   ├── KPICard.tsx
+│   │   ├── DashboardHeader.tsx
+│   │   ├── Filters.tsx
+│   │   ├── Charts.tsx
+│   │   └── DataTable.tsx
+│   │
+│   ├── excel/
+│   │   ├── ExcelUploader.tsx
+│   │   └── ExcelStatus.tsx
+│   │
+│   └── layout/
+│       ├── Sidebar.tsx
+│       ├── Header.tsx
+│       └── Layout.tsx
+│
+├── pages/
+│   ├── Dashboard.tsx
+│   ├── Data.tsx
+│   ├── Analysis.tsx
+│   └── Settings.tsx
+│
+├── services/
+│   └── excelService.ts
+│
+├── utils/
+│   ├── dataProcessor.ts
+│   ├── calculations.ts
+│   └── formatters.ts
+│
+├── hooks/
+│   └── useExcelData.ts
+│
+├── types/
+│   └── excel.ts
+│
+├── App.tsx
+└── main.tsx
+```
+
+La arquitectura debe separar:
+
+**UI → lógica → procesamiento → tipos → datos.**
+
+---
+
+# 14. TIPADO
+
+Utilizar TypeScript correctamente.
+
+Evitar:
+
+```typescript
+any
+```
+
+cuando sea posible.
+
+Crear tipos/interfaces para:
+
+* ExcelRow
+* ExcelColumn
+* KPI
+* Filter
+* ChartData
+* DashboardState
+
+La aplicación debe ser robusta ante cambios en la estructura del Excel.
+
+---
+
+# 15. MANEJO DE DATOS
+
+El Excel puede cambiar en el futuro.
+
+Por eso:
+
+**NO asumir nombres de columnas específicos si no se conocen todavía.**
+
+La aplicación debe ser capaz de inspeccionar la estructura del Excel.
+
+Si encuentra:
+
+```text
+Fecha
+Estado
+Área
+Responsable
+Cantidad
+```
+
+debe aprovecharlas.
+
+Si encuentra otras columnas:
+
+```text
+Proveedor
+Categoría
+Costo
+Tipo
+```
+
+también debe intentar utilizarlas.
+
+Crear una lógica de detección flexible.
+
+---
+
+# 16. EXPORTACIÓN
+
+Agregar opciones para:
+
+* Exportar datos filtrados a Excel.
+* Exportar tabla a CSV.
+
+El usuario debe poder exportar solamente los registros que actualmente está visualizando.
+
+---
+
+# 17. PERSISTENCIA
+
+Mientras sea posible, mantener temporalmente la información en memoria/localStorage para que un refresh accidental no obligue inmediatamente a volver a cargar el archivo.
+
+No implementar backend todavía.
+
+Pero dejar la arquitectura preparada para posteriormente utilizar:
+
+```text
+React Frontend
+        ↓
+REST API
+        ↓
+Backend
+        ↓
+Base de datos
+```
+
+---
+
+# 18. RESPONSIVE
+
+En escritorio:
+
+```text
+Sidebar | Dashboard
+```
+
+En tablet/móvil:
+
+```text
+Header
+Dashboard
+```
+
+El sidebar debe convertirse en menú responsive.
+
+Los gráficos deben adaptarse automáticamente al ancho disponible.
+
+---
+
+# 19. CALIDAD DEL CÓDIGO
+
+Actúa como un desarrollador senior.
+
+No quiero:
+
+* Código duplicado.
+* Componentes gigantes.
+* Datos hardcodeados.
+* Variables innecesarias.
+* Funciones mezcladas con UI.
+* Errores de TypeScript.
+* Dependencias innecesarias.
+
+Utiliza:
+
+* Componentización.
+* Hooks.
+* Funciones reutilizables.
+* Tipado fuerte.
+* Manejo de errores.
+* Buenas prácticas de React.
+* Código limpio.
+
+---
+
+# 20. README
+
+Crear un `README.md` explicando:
+
+* Requisitos.
+* Instalación.
+* Dependencias.
+* Cómo ejecutar.
+* Cómo cargar el Excel.
+* Estructura del proyecto.
+* Cómo agregar nuevas métricas.
+* Cómo conectar posteriormente un backend.
+
+Debe poder ejecutarse con:
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+# 21. IMPORTANTE: PRIMER PASO
+
+Antes de inventar la estructura de los datos:
+
+**ANALIZA EL ARCHIVO `mejora.xlsx` que te proporcionaré.**
+
+Identifica:
+
+1. Nombre de las hojas.
+2. Cantidad de registros.
+3. Columnas.
+4. Tipos de datos.
+5. Fechas.
+6. Campos numéricos.
+7. Campos categóricos.
+8. Campos de estado.
+9. Posibles relaciones.
+10. Información útil para generar KPIs.
+
+Después de analizarlo, adapta el dashboard específicamente a los datos reales encontrados.
+
+**No inventes columnas, métricas ni información que no exista en el Excel.**
+
+---
+
+# 22. RESULTADO ESPERADO
+
+Quiero recibir un proyecto completamente funcional:
+
+```text
+React + Vite + TypeScript
+        ↓
+Carga Excel
+        ↓
+Procesamiento automático
+        ↓
+Normalización
+        ↓
+Filtros
+        ↓
+KPIs
+        ↓
+Gráficos
+        ↓
+Análisis
+        ↓
+Tabla de datos
+        ↓
+Exportación
+```
+
+El resultado debe sentirse como un **dashboard empresarial real**, no como una plantilla de ejemplo.
+
+Prioriza:
+
+**funcionalidad + UX + escalabilidad + código limpio + rendimiento.**
+
+Si existe alguna decisión técnica que no esté especificada, toma la decisión que tomaría un **Senior Full Stack Developer**, priorizando mantenibilidad y facilidad de evolución.
