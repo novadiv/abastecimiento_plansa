@@ -9,8 +9,8 @@
  * debe coincidir tal cual aparece en el filtro "Responsable" del sistema).
  */
 export const RESPONSABLE_BY_USUARIO: Record<string, string> = {
-  jcamacho: 'JEANPIERO PEREA',
-  logistica_03: 'JEANPIERO PEREA',
+  jcamacho: '********',
+  logistica_03: '******',
 };
 
 const OVERRIDE_STORAGE_KEY = 'mis_compras_responsable_override';

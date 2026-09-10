@@ -8,7 +8,7 @@ import { getToken, clearToken } from './tokenStorage';
  */
 
 export const API_BASE_URL: string =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://10.147.17.86:8000/api';
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '';
 
 export class ApiError extends Error {
   status: number;
