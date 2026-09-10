@@ -20,10 +20,12 @@ function escapeCsvValue(value: unknown): string {
   return str;
 }
 
+
 export function exportToCSV(rows: Producto[], columns: ExportColumn[], fileName = 'productos.csv'): void {
   const header = columns.map((c) => escapeCsvValue(c.label)).join(';');
   const lines = rows.map((row) => columns.map((c) => escapeCsvValue(row[c.key as string])).join(';'));
   const csv = [header, ...lines].join('\r\n');
+
 
   const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
