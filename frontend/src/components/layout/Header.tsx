@@ -4,9 +4,10 @@ import { formatDateTime } from '@/utils/formatters';
 
 const PAGE_TITLES: Record<string, string> = {
   dashboard: 'Dashboard',
-  data: 'Datos',
+  data: 'Productos',
   analysis: 'Análisis',
   'mis-compras': 'Mis Compras',
+  abastecimiento: 'Plan de Abastecimiento',
   rotacion: 'Análisis de Materiales y Rotación',
   settings: 'Configuración',
 };

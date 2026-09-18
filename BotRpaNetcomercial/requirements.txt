@@ -1,0 +1,13 @@
+# ── Automatización de la interfaz ───────────────────────────────────
+pyautogui==0.9.54
+pyperclip==1.9.0
+pillow==11.1.0
+opencv-python==4.11.0.86   # necesario para el parámetro `confidence` de locateOnScreen
+
+# ── Programación y cola ─────────────────────────────────────────────
+APScheduler==3.11.0
+requests==2.32.3
+python-dotenv==1.0.1
+
+# La base de datos del bot es SQLite, que viene en la biblioteca estándar
+# de Python: no hay nada que instalar para eso.

@@ -5,6 +5,7 @@ import {
   fetchRequerimientosLista,
   fetchStatsOC,
 } from '@/services/requerimientosService';
+import { fetchConReintento } from '@/utils/fetchConReintento';
 import { buildProductosFrecuentes, countProveedoresDistintos } from '@/utils/comprasFrecuentes';
 import type {
   ConsolidadoProductoKpis,
@@ -79,7 +80,10 @@ export function useMisComprasData(responsable: string | null, filters: MisCompra
     }
     let cancelled = false;
     setKpisState((prev) => ({ ...prev, loading: true, error: null }));
-    Promise.all([fetchRequerimientosKpis(responsable, filters), fetchStatsOC(responsable, filters)])
+    Promise.all([
+      fetchConReintento(() => fetchRequerimientosKpis(responsable, filters)),
+      fetchConReintento(() => fetchStatsOC(responsable, filters)),
+    ])
       .then(([kpis, statsOC]) => {
         if (!cancelled) setKpisState({ kpis, statsOC, loading: false, error: null });
       })
@@ -99,7 +103,7 @@ export function useMisComprasData(responsable: string | null, filters: MisCompra
     }
     let cancelled = false;
     setConsolidadoState((prev) => ({ ...prev, loading: true, error: null }));
-    fetchConsolidadoProducto(responsable, filters, consolidadoPage, CONSOLIDADO_LIMIT)
+    fetchConReintento(() => fetchConsolidadoProducto(responsable, filters, consolidadoPage, CONSOLIDADO_LIMIT))
       .then((response) => {
         if (cancelled) return;
         setConsolidadoState({
@@ -130,7 +134,7 @@ export function useMisComprasData(responsable: string | null, filters: MisCompra
     }
     let cancelled = false;
     setHistorialState((prev) => ({ ...prev, loading: true, error: null }));
-    fetchRequerimientosLista(responsable, filters, historialPage, HISTORIAL_LIMIT)
+    fetchConReintento(() => fetchRequerimientosLista(responsable, filters, historialPage, HISTORIAL_LIMIT))
       .then((response) => {
         if (cancelled) return;
         setHistorialState({ items: response.data, total: response.total, pages: response.pages, loading: false, error: null });

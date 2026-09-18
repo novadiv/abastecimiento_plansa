@@ -1,0 +1,40 @@
+# Secretos — nunca subir
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Salidas generadas en tiempo de ejecución — deben quedar vacías en git
+data/*
+!data/.gitkeep
+
+# Excepción: los perfiles de coordenadas SÍ se versionan. Mapear una pantalla
+# cuesta media hora de trabajo manual y sin ellos el bot no arranca: son
+# configuración, no salida temporal.
+!data/coordenadas/
+!data/coordenadas/*.json
+data/coordenadas/*.anterior.json
+
+# Pero las capturas de pantalla completas NO: son fotos de la pantalla real
+# del ERP, con nombres de proveedores, precios y saldos dentro.
+data/mapeo/
+data/verificacion/
+jobs/*
+!jobs/.gitkeep
+logs/*
+!logs/.gitkeep
+screenshots/*
+!screenshots/.gitkeep
+test_screenshots/*
+!test_screenshots/.gitkeep
+
+# Windows / editores
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/

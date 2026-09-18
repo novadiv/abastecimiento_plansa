@@ -4,11 +4,14 @@ import { useHashRoute } from '@/hooks/useHashRoute';
 import { Layout } from '@/components/layout/Layout';
 import { LoginScreen } from '@/components/auth/LoginScreen';
 import { LoadingState } from '@/components/common/LoadingState';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Dashboard } from '@/pages/Dashboard';
 import { Data } from '@/pages/Data';
 import { Analysis } from '@/pages/Analysis';
 import { MisCompras } from '@/pages/MisCompras';
+import { Abastecimiento } from '@/pages/Abastecimiento';
 import { Rotacion } from '@/pages/Rotacion';
+import { Administracion } from '@/pages/Administracion';
 import { Settings } from '@/pages/Settings';
 
 function Router() {
@@ -19,7 +22,9 @@ function Router() {
     data: <Data />,
     analysis: <Analysis />,
     'mis-compras': <MisCompras />,
+    abastecimiento: <Abastecimiento />,
     rotacion: <Rotacion />,
+    administracion: <Administracion />,
     settings: <Settings />,
   } as const;
 
@@ -47,7 +52,9 @@ function AuthGate() {
 
   return (
     <ProductosProvider>
-      <Router />
+      <ErrorBoundary>
+        <Router />
+      </ErrorBoundary>
     </ProductosProvider>
   );
 }

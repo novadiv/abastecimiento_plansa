@@ -24,13 +24,15 @@ export class ApiError extends Error {
 export const AUTH_EXPIRED_EVENT = 'auth:expired';
 
 function buildQueryString(params: Record<string, string | number | undefined>): string {
-  const search = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === '') return;
-    search.set(key, String(value));
-  });
-  const qs = search.toString();
-  return qs ? `?${qs}` : '';
+  // No se usa URLSearchParams: codifica los espacios como "+", y el servidor
+  // real (confirmado con un error de regex de MongoDB — code 51091 — al
+  // mandar "JEANPIERO PEREA") no siempre lo interpreta de vuelta como
+  // espacio. `encodeURIComponent` codifica el espacio como %20, que sí
+  // funciona de forma consistente (verificado directamente contra la API).
+  const pares = Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== '')
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
+  return pares.length > 0 ? `?${pares.join('&')}` : '';
 }
 
 interface RequestOptions {

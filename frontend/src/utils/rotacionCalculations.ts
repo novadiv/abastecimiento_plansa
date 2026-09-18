@@ -1,27 +1,18 @@
 import type { ConsolidadoProductoRecord } from '@/types/requerimiento';
 import type { ProductoRotacion, RotacionConfig, RotacionFilters, RotacionNivel, RotacionSortKey, TipoMaterial } from '@/types/rotacion';
+import { buildEstacionalidad, MES_NOMBRES } from './estacionalidad';
 
 /**
  * Cálculo de clasificación de rotación y métricas derivadas, a partir de los
  * registros consolidados por producto que ya calcula el servidor. Todo se
  * deriva de `n_reqs`, `cantidad_demandada`, `stock_actual`, `items[].fecha/
  * cantidad/area_origen/solicita` y `proveedores_historicos` reales — ningún
- * valor se escribe a mano.
+ * valor se escribe a mano. La heurística de estacionalidad vive en
+ * `utils/estacionalidad.ts` (compartida con el módulo "Panorama de
+ * Materiales" de Mis Compras).
  */
 
-export const MES_NOMBRES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-];
-
-// Heurística de estacionalidad: se requiere evidencia mínima (movimientos
-// repartidos en varios meses distintos) antes de calificar algo como
-// estacional o no — si no hay evidencia suficiente, se reporta "Dato no
-// disponible" en vez de estimarlo.
-const ESTACIONALIDAD_MIN_MESES_CON_DATOS = 4;
-const ESTACIONALIDAD_MIN_MOVIMIENTOS = 6;
-// El mes de mayor consumo debe superar al promedio mensual en al menos este % para considerarse un pico estacional real.
-const ESTACIONALIDAD_UMBRAL_VARIACION_PCT = 60;
+export { MES_NOMBRES };
 
 /** "sinRotacion" (sin movimiento reciente) prevalece sobre la clasificación por volumen de movimientos. */
 export function classifyRotacion(movimientos: number, diasSinMovimiento: number | null, config: RotacionConfig): RotacionNivel {
@@ -66,53 +57,6 @@ function averageGapDays(timestampsMs: number[]): number | null {
   const gaps: number[] = [];
   for (let i = 1; i < timestampsMs.length; i += 1) gaps.push((timestampsMs[i] - timestampsMs[i - 1]) / 86_400_000);
   return gaps.reduce((a, b) => a + b, 0) / gaps.length;
-}
-
-interface Estacionalidad {
-  consumoPorMes: number[];
-  esEstacional: boolean;
-  mesMayorConsumo: string | null;
-  variacionConsumoPct: number | null;
-}
-
-/**
- * Agrupa el consumo real (cantidad solicitada) por mes calendario, sumando
- * todos los años del historial disponible. Solo se declara "estacional" un
- * material cuando hay evidencia suficiente (movimientos repartidos en varios
- * meses distintos) — si no, se reporta como "sin evidencia suficiente" y no
- * se estima nada.
- */
-function buildEstacionalidad(fechasConCantidad: { ms: number; cantidad: number }[]): Estacionalidad {
-  const consumoPorMes = new Array(12).fill(0) as number[];
-  const mesesConDatos = new Set<number>();
-
-  fechasConCantidad.forEach(({ ms, cantidad }) => {
-    const mes = new Date(ms).getMonth();
-    consumoPorMes[mes] += cantidad || 0;
-    mesesConDatos.add(mes);
-  });
-
-  const totalConsumo = consumoPorMes.reduce((a, b) => a + b, 0);
-  const evidenciaSuficiente = mesesConDatos.size >= ESTACIONALIDAD_MIN_MESES_CON_DATOS && fechasConCantidad.length >= ESTACIONALIDAD_MIN_MOVIMIENTOS;
-
-  if (!evidenciaSuficiente || totalConsumo <= 0) {
-    return { consumoPorMes, esEstacional: false, mesMayorConsumo: null, variacionConsumoPct: null };
-  }
-
-  const promedio = totalConsumo / 12;
-  let mesPicoIdx = 0;
-  consumoPorMes.forEach((v, i) => {
-    if (v > consumoPorMes[mesPicoIdx]) mesPicoIdx = i;
-  });
-
-  const variacionConsumoPct = promedio > 0 ? ((consumoPorMes[mesPicoIdx] - promedio) / promedio) * 100 : 0;
-
-  return {
-    consumoPorMes,
-    esEstacional: variacionConsumoPct >= ESTACIONALIDAD_UMBRAL_VARIACION_PCT,
-    mesMayorConsumo: MES_NOMBRES[mesPicoIdx],
-    variacionConsumoPct,
-  };
 }
 
 export function buildProductoRotacion(record: ConsolidadoProductoRecord, config: RotacionConfig, now = Date.now()): ProductoRotacion {

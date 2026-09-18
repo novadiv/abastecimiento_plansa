@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapeo · __PANTALLA_NOMBRE__</title>
+<style>
+  :root {
+    --tinta: #1e293b; --tenue: #64748b; --borde: #e2e8f0; --fondo: #f8fafc;
+    --marca: #2563eb; --marca-suave: #eff6ff; --ok: #059669;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 13px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+         color: var(--tinta); background: var(--fondo); display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── Panel izquierdo ── */
+  aside { width: 340px; flex: 0 0 340px; background: #fff; border-right: 1px solid var(--borde);
+          display: flex; flex-direction: column; }
+  .cabecera { padding: 14px 16px; border-bottom: 1px solid var(--borde); }
+  .cabecera h1 { margin: 0 0 2px; font-size: 14px; }
+  .cabecera p { margin: 0; font-size: 11px; color: var(--tenue); }
+  .huella { margin-top: 8px; font-size: 11px; color: var(--tenue); background: var(--fondo);
+            border-radius: 6px; padding: 6px 8px; font-variant-numeric: tabular-nums; }
+
+  .seccion { padding: 10px 16px 4px; font-size: 10px; text-transform: uppercase;
+             letter-spacing: .06em; color: var(--tenue); font-weight: 600; }
+  .lista { flex: 1; overflow-y: auto; padding: 0 10px 10px; }
+
+  .campo { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 7px;
+           cursor: pointer; border: 1px solid transparent; }
+  .campo:hover { background: var(--fondo); }
+  .campo.armado { background: var(--marca-suave); border-color: var(--marca); }
+  .campo .punto { width: 8px; height: 8px; border-radius: 50%; background: var(--borde); flex: 0 0 8px; }
+  .campo.hecho .punto { background: var(--ok); }
+  .campo .texto { flex: 1; min-width: 0; }
+  .campo .nombre { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .campo .desc { font-size: 11px; color: var(--tenue); display: block; overflow: hidden;
+                 text-overflow: ellipsis; white-space: nowrap; }
+  .campo .coord { font-size: 11px; color: var(--ok); font-variant-numeric: tabular-nums;
+                  font-weight: 600; white-space: nowrap; }
+  .campo .quitar { opacity: 0; border: 0; background: none; color: var(--tenue); cursor: pointer;
+                   font-size: 15px; line-height: 1; padding: 2px 4px; }
+  .campo:hover .quitar { opacity: 1; }
+
+  .pie { border-top: 1px solid var(--borde); padding: 12px 16px; display: grid; gap: 8px; }
+  button.accion { width: 100%; padding: 9px; border-radius: 7px; border: 1px solid var(--borde);
+                  background: #fff; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--tinta); }
+  button.accion:hover { background: var(--fondo); }
+  button.primaria { background: var(--marca); border-color: var(--marca); color: #fff; }
+  button.primaria:hover { background: #1d4ed8; }
+  button.primaria:disabled { background: #cbd5e1; border-color: #cbd5e1; cursor: not-allowed; }
+  .fila { display: flex; gap: 8px; }
+  input.nuevo { flex: 1; padding: 7px 9px; border: 1px solid var(--borde); border-radius: 7px;
+                font: inherit; min-width: 0; }
+
+  /* ── Lienzo ── */
+  main { flex: 1; position: relative; overflow: auto; background: #334155; }
+  #lienzo { position: relative; display: inline-block; line-height: 0; }
+  #captura { display: block; cursor: crosshair; }
+  .marca { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; pointer-events: none; }
+  .marca::before, .marca::after { content: ""; position: absolute; background: #ef4444; }
+  .marca::before { left: 8px; top: 0; width: 2px; height: 18px; }
+  .marca::after { top: 8px; left: 0; height: 2px; width: 18px; }
+  .marca.sel::before, .marca.sel::after { background: #22d3ee; }
+  .marca span { position: absolute; left: 12px; top: -4px; font-size: 10px; color: #fff;
+                background: rgba(15,23,42,.85); padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
+  #anclaCaja { position: absolute; border: 2px solid #22d3ee; background: rgba(34,211,238,.12);
+               pointer-events: none; display: none; }
+
+  /* ── Lupa ── */
+  #lupa { position: fixed; right: 16px; bottom: 16px; width: 208px; background: #fff;
+          border: 1px solid var(--borde); border-radius: 10px; padding: 8px;
+          box-shadow: 0 10px 30px rgba(15,23,42,.25); z-index: 20; }
+  #lupaCanvas { display: block; width: 192px; height: 128px; image-rendering: pixelated;
+                border-radius: 6px; background: #0f172a; }
+  #lupaTexto { margin-top: 6px; font-size: 11px; color: var(--tenue); text-align: center;
+               font-variant-numeric: tabular-nums; }
+
+  #aviso { position: fixed; left: 356px; top: 16px; z-index: 20; background: rgba(15,23,42,.92);
+           color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 12px; display: none; }
+  #aviso.visible { display: block; }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="cabecera">
+    <h1>__PANTALLA_NOMBRE__</h1>
+    <p>Elige un campo de la lista y haz clic en la captura.</p>
+    <div class="huella">__ANCHO__ x __ALTO__ px · escala de Windows __ESCALA__</div>
+  </div>
+
+  <div class="seccion">Ancla de la pantalla</div>
+  <div style="padding: 0 16px 6px;">
+    <button class="accion" id="btnAncla">Marcar ancla (arrastra un recuadro)</button>
+    <p style="margin:6px 0 0; font-size:11px; color:var(--tenue);" id="anclaEstado">
+      Sin ancla. Recuadra un rótulo fijo (por ejemplo la etiqueta &laquo;PROVEEDOR:&raquo;)
+      para que las coordenadas sobrevivan si la ventana se mueve unos píxeles.
+    </p>
+  </div>
+
+  <div class="seccion">Campos (<span id="contador">0/0</span>)</div>
+  <div class="lista" id="lista"></div>
+
+  <div class="pie">
+    <div class="fila">
+      <input class="nuevo" id="nuevoNombre" placeholder="agregar_campo" autocomplete="off">
+      <button class="accion" style="width:auto; padding:7px 12px;" id="btnAgregar">+</button>
+    </div>
+    <button class="accion" id="btnCopiar">Copiar JSON al portapapeles</button>
+    <button class="accion primaria" id="btnGuardar" disabled>Guardar perfil (JSON + ancla)</button>
+  </div>
+</aside>
+
+<main>
+  <div id="lienzo">
+    <img id="captura" src="__IMAGEN__" alt="Captura de la pantalla a mapear">
+    <div id="anclaCaja"></div>
+  </div>
+</main>
+
+<div id="lupa">
+  <canvas id="lupaCanvas" width="192" height="128"></canvas>
+  <div id="lupaTexto">mueve el mouse sobre la captura</div>
+</div>
+
+<div id="aviso"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var PANTALLA_ID = __PANTALLA_ID_JSON__;
+  var PANTALLA_NOMBRE = __PANTALLA_NOMBRE_JSON__;
+  var HUELLA = __HUELLA_JSON__;
+  var ARCHIVO_CAPTURA = __CAPTURA_JSON__;
+  var campos = __CAMPOS_JSON__;   // [{nombre, desc, x, y, nota}]
+
+  var img = document.getElementById("captura");
+  var lienzo = document.getElementById("lienzo");
+  var lista = document.getElementById("lista");
+  var cajaAncla = document.getElementById("anclaCaja");
+  var lupaCanvas = document.getElementById("lupaCanvas");
+  var lupaCtx = lupaCanvas.getContext("2d");
+  var lupaTexto = document.getElementById("lupaTexto");
+  var aviso = document.getElementById("aviso");
+
+  var armado = -1;         // indice del campo esperando clic
+  var seleccionado = -1;   // indice del campo que mueven las flechas
+  var ancla = null;        // {nombre, recorte:[l,t,w,h], x, y}
+  var modoAncla = false;
+  var arrastre = null;
+
+  var ZOOM = 8, LUPA_W = 192, LUPA_H = 128;
+  lupaCtx.imageSmoothingEnabled = false;
+
+  // -- Utilidades -------------------------------------------------
+  function decir(texto, ms) {
+    aviso.textContent = texto;
+    aviso.classList.add("visible");
+    clearTimeout(decir._t);
+    decir._t = setTimeout(function () { aviso.classList.remove("visible"); }, ms || 2600);
+  }
+
+  /** Posicion en pixeles REALES de la captura (la imagen puede verse escalada). */
+  function puntoReal(ev) {
+    var r = img.getBoundingClientRect();
+    var fx = img.naturalWidth / r.width;
+    var fy = img.naturalHeight / r.height;
+    return {
+      x: Math.round((ev.clientX - r.left) * fx),
+      y: Math.round((ev.clientY - r.top) * fy)
+    };
+  }
+
+  function aPantalla(x, y) {
+    var r = img.getBoundingClientRect();
+    return {
+      x: x * (r.width / img.naturalWidth),
+      y: y * (r.height / img.naturalHeight)
+    };
+  }
+
+  function sinCoord(c) { return c.x === null || c.x === undefined; }
+
+  // -- Panel de campos --------------------------------------------
+  function pintarLista() {
+    lista.innerHTML = "";
+    var hechos = 0;
+    campos.forEach(function (c, i) {
+      if (!sinCoord(c)) hechos++;
+      var fila = document.createElement("div");
+      fila.className = "campo" + (i === armado ? " armado" : "") + (sinCoord(c) ? "" : " hecho");
+      fila.innerHTML =
+        '<span class="punto"></span>' +
+        '<span class="texto"><span class="nombre"></span><span class="desc"></span></span>' +
+        '<span class="coord"></span>' +
+        '<button class="quitar" title="Quitar campo">&times;</button>';
+      fila.querySelector(".nombre").textContent = c.nombre;
+      fila.querySelector(".desc").textContent = c.desc || "";
+      fila.querySelector(".coord").textContent = sinCoord(c) ? "" : (c.x + ", " + c.y);
+      fila.addEventListener("click", function (ev) {
+        if (ev.target.classList.contains("quitar")) {
+          campos.splice(i, 1);
+          armado = -1; seleccionado = -1;
+          redibujar();
+          return;
+        }
+        armado = (armado === i) ? -1 : i;
+        seleccionado = i;
+        redibujar();
+        if (armado === i) decir("Haz clic en la captura sobre «" + c.nombre + "»");
+      });
+      lista.appendChild(fila);
+    });
+    document.getElementById("contador").textContent = hechos + "/" + campos.length;
+    document.getElementById("btnGuardar").disabled = hechos === 0;
+  }
+
+  function pintarMarcas() {
+    Array.prototype.slice.call(lienzo.querySelectorAll(".marca")).forEach(function (m) { m.remove(); });
+    campos.forEach(function (c, i) {
+      if (sinCoord(c)) return;
+      var p = aPantalla(c.x, c.y);
+      var m = document.createElement("div");
+      m.className = "marca" + (i === seleccionado ? " sel" : "");
+      m.style.left = p.x + "px";
+      m.style.top = p.y + "px";
+      var et = document.createElement("span");
+      et.textContent = c.nombre;
+      m.appendChild(et);
+      lienzo.appendChild(m);
+    });
+  }
+
+  function pintarAncla() {
+    var est = document.getElementById("anclaEstado");
+    if (!ancla) { cajaAncla.style.display = "none"; return; }
+    var a = aPantalla(ancla.recorte[0], ancla.recorte[1]);
+    var b = aPantalla(ancla.recorte[0] + ancla.recorte[2], ancla.recorte[1] + ancla.recorte[3]);
+    cajaAncla.style.display = "block";
+    cajaAncla.style.left = a.x + "px";
+    cajaAncla.style.top = a.y + "px";
+    cajaAncla.style.width = (b.x - a.x) + "px";
+    cajaAncla.style.height = (b.y - a.y) + "px";
+    est.textContent = "Ancla en (" + ancla.recorte[0] + ", " + ancla.recorte[1] + "), " +
+                      ancla.recorte[2] + "x" + ancla.recorte[3] + " px.";
+    est.style.color = "var(--ok)";
+  }
+
+  function redibujar() { pintarLista(); pintarMarcas(); pintarAncla(); }
+
+  // -- Lupa -------------------------------------------------------
+  img.addEventListener("mousemove", function (ev) {
+    var p = puntoReal(ev);
+    var sw = LUPA_W / ZOOM, sh = LUPA_H / ZOOM;
+    lupaCtx.fillStyle = "#0f172a";
+    lupaCtx.fillRect(0, 0, LUPA_W, LUPA_H);
+    lupaCtx.drawImage(img, p.x - sw / 2, p.y - sh / 2, sw, sh, 0, 0, LUPA_W, LUPA_H);
+    lupaCtx.strokeStyle = "rgba(239,68,68,.9)";
+    lupaCtx.lineWidth = 1;
+    lupaCtx.beginPath();
+    lupaCtx.moveTo(LUPA_W / 2 + .5, 0); lupaCtx.lineTo(LUPA_W / 2 + .5, LUPA_H);
+    lupaCtx.moveTo(0, LUPA_H / 2 + .5); lupaCtx.lineTo(LUPA_W, LUPA_H / 2 + .5);
+    lupaCtx.stroke();
+    lupaTexto.textContent = p.x + " , " + p.y;
+  });
+
+  // -- Captura de puntos y del ancla ------------------------------
+  img.addEventListener("mousedown", function (ev) {
+    if (!modoAncla) return;
+    ev.preventDefault();
+    arrastre = puntoReal(ev);
+  });
+
+  window.addEventListener("mousemove", function (ev) {
+    if (!arrastre) return;
+    var p = puntoReal(ev);
+    var a = aPantalla(Math.min(arrastre.x, p.x), Math.min(arrastre.y, p.y));
+    var b = aPantalla(Math.max(arrastre.x, p.x), Math.max(arrastre.y, p.y));
+    cajaAncla.style.display = "block";
+    cajaAncla.style.left = a.x + "px"; cajaAncla.style.top = a.y + "px";
+    cajaAncla.style.width = (b.x - a.x) + "px"; cajaAncla.style.height = (b.y - a.y) + "px";
+  });
+
+  window.addEventListener("mouseup", function (ev) {
+    if (!arrastre) return;
+    var p = puntoReal(ev);
+    var l = Math.min(arrastre.x, p.x), t = Math.min(arrastre.y, p.y);
+    var w = Math.abs(p.x - arrastre.x), h = Math.abs(p.y - arrastre.y);
+    arrastre = null; modoAncla = false;
+    document.getElementById("btnAncla").textContent = "Marcar ancla (arrastra un recuadro)";
+    if (w < 12 || h < 8) { decir("El recuadro es muy pequeño; inténtalo otra vez."); pintarAncla(); return; }
+    ancla = { nombre: "ancla_" + PANTALLA_ID, recorte: [l, t, w, h],
+              x: Math.round(l + w / 2), y: Math.round(t + h / 2) };
+    decir("Ancla marcada.");
+    redibujar();
+  });
+
+  img.addEventListener("click", function (ev) {
+    if (modoAncla) return;
+    if (armado < 0) { decir("Primero elige un campo en la lista de la izquierda."); return; }
+    var p = puntoReal(ev);
+    campos[armado].x = p.x;
+    campos[armado].y = p.y;
+    seleccionado = armado;
+    // Salta solo al siguiente campo sin capturar: se mapea en cadena.
+    var siguiente = -1;
+    for (var i = armado + 1; i < campos.length; i++) {
+      if (sinCoord(campos[i])) { siguiente = i; break; }
+    }
+    armado = siguiente;
+    redibujar();
+    if (siguiente >= 0) decir("Ahora: «" + campos[siguiente].nombre + "»");
+    else decir("Todos los campos tienen coordenada. Afina con las flechas si hace falta.");
+  });
+
+  // Ajuste fino con las flechas sobre el campo seleccionado.
+  window.addEventListener("keydown", function (ev) {
+    if (seleccionado < 0) return;
+    if (document.activeElement && document.activeElement.tagName === "INPUT") return;
+    var c = campos[seleccionado];
+    if (sinCoord(c)) return;
+    var paso = ev.shiftKey ? 10 : 1, movido = true;
+    if (ev.key === "ArrowLeft") c.x -= paso;
+    else if (ev.key === "ArrowRight") c.x += paso;
+    else if (ev.key === "ArrowUp") c.y -= paso;
+    else if (ev.key === "ArrowDown") c.y += paso;
+    else movido = false;
+    if (movido) { ev.preventDefault(); redibujar(); lupaTexto.textContent = c.x + " , " + c.y; }
+  });
+
+  document.getElementById("btnAncla").addEventListener("click", function () {
+    modoAncla = !modoAncla;
+    armado = -1;
+    this.textContent = modoAncla ? "Arrastra sobre la captura…" : "Marcar ancla (arrastra un recuadro)";
+    redibujar();
+  });
+
+  document.getElementById("btnAgregar").addEventListener("click", agregar);
+  document.getElementById("nuevoNombre").addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter") agregar();
+  });
+
+  function agregar() {
+    var caja = document.getElementById("nuevoNombre");
+    var nombre = caja.value.trim().replace(/\s+/g, "_").toLowerCase();
+    if (!nombre) return;
+    if (campos.some(function (c) { return c.nombre === nombre; })) {
+      decir("Ya existe un campo con ese nombre."); return;
+    }
+    campos.push({ nombre: nombre, desc: "", x: null, y: null, nota: "" });
+    caja.value = "";
+    armado = campos.length - 1;
+    redibujar();
+    lista.scrollTop = lista.scrollHeight;
+    decir("Haz clic en la captura sobre «" + nombre + "»");
+  }
+
+  // -- Exportacion ------------------------------------------------
+  function construirPerfil() {
+    var salida = {
+      pantalla_id: PANTALLA_ID,
+      nombre: PANTALLA_NOMBRE,
+      mapeado: new Date().toISOString(),
+      captura: ARCHIVO_CAPTURA,
+      pantalla: HUELLA,
+      ancla: ancla ? {
+        nombre: ancla.nombre,
+        imagen: ancla.nombre + ".png",
+        x: ancla.x, y: ancla.y,
+        recorte: ancla.recorte
+      } : null,
+      campos: {}
+    };
+    campos.forEach(function (c) {
+      if (sinCoord(c)) return;
+      var reg = { x: c.x, y: c.y, descripcion: c.desc || "", nota: c.nota || "" };
+      if (ancla) { reg.dx = c.x - ancla.x; reg.dy = c.y - ancla.y; }
+      salida.campos[c.nombre] = reg;
+    });
+    return salida;
+  }
+
+  function descargar(nombre, blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  document.getElementById("btnCopiar").addEventListener("click", function () {
+    var txt = JSON.stringify(construirPerfil(), null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(
+        function () { decir("JSON copiado."); },
+        function () { window.prompt("Copia este JSON:", txt); }
+      );
+    } else {
+      window.prompt("Copia este JSON:", txt);
+    }
+  });
+
+  document.getElementById("btnGuardar").addEventListener("click", function () {
+    var perfil = construirPerfil();
+    descargar(PANTALLA_ID + ".json",
+      new Blob([JSON.stringify(perfil, null, 2)], { type: "application/json" }));
+
+    if (ancla) {
+      var c = document.createElement("canvas");
+      c.width = ancla.recorte[2]; c.height = ancla.recorte[3];
+      c.getContext("2d").drawImage(img,
+        ancla.recorte[0], ancla.recorte[1], ancla.recorte[2], ancla.recorte[3],
+        0, 0, ancla.recorte[2], ancla.recorte[3]);
+      c.toBlob(function (b) { descargar(ancla.nombre + ".png", b); }, "image/png");
+    }
+    decir("Descargado. Ejecuta: python mapear.py --instalar", 8000);
+  });
+
+  img.addEventListener("load", redibujar);
+  if (img.complete) redibujar();
+})();
+</script>
+</body>
+</html>

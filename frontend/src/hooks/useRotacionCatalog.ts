@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchConsolidadoGlobalPage } from '@/services/requerimientosService';
+import { fetchConReintento } from '@/utils/fetchConReintento';
 import { buildProductoRotacion } from '@/utils/rotacionCalculations';
 import { getRotacionConfig } from '@/config/rotacionConfig';
 import type { CargaProgreso, ProductoRotacion } from '@/types/rotacion';
@@ -73,7 +74,7 @@ export function useRotacionCatalog() {
 
     try {
       const config = getRotacionConfig();
-      const first = await fetchConsolidadoGlobalPage(1, PAGE_LIMIT);
+      const first = await fetchConReintento(() => fetchConsolidadoGlobalPage(1, PAGE_LIMIT));
       if (cancelRef.current) return;
 
       let acumulado: ProductoRotacion[] = first.data.map((r) => buildProductoRotacion(r, config));
@@ -85,7 +86,7 @@ export function useRotacionCatalog() {
       for (let page = 2; page <= first.pages; page += 1) {
         if (cancelRef.current) return;
         // eslint-disable-next-line no-await-in-loop
-        const response = await fetchConsolidadoGlobalPage(page, PAGE_LIMIT);
+        const response = await fetchConReintento(() => fetchConsolidadoGlobalPage(page, PAGE_LIMIT));
         if (cancelRef.current) return;
         acumulado = acumulado.concat(response.data.map((r) => buildProductoRotacion(r, config)));
         setState((prev) => ({

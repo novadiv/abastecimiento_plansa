@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchRequerimientosKpis } from '@/services/requerimientosService';
+import { fetchConReintento } from '@/utils/fetchConReintento';
 import type { RequerimientosKpis } from '@/types/requerimiento';
 
 interface State {
@@ -24,8 +25,8 @@ export function useFixedPeriodKpis(responsable: string | null) {
 
     setState((prev) => ({ ...prev, loading: true }));
     Promise.all([
-      fetchRequerimientosKpis(responsable, { año, mes }),
-      fetchRequerimientosKpis(responsable, { año }),
+      fetchConReintento(() => fetchRequerimientosKpis(responsable, { año, mes })),
+      fetchConReintento(() => fetchRequerimientosKpis(responsable, { año })),
     ])
       .then(([mesActual, añoActual]) => setState({ mesActual, añoActual, loading: false }))
       .catch(() => setState({ mesActual: null, añoActual: null, loading: false }));

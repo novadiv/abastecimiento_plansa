@@ -1,0 +1,315 @@
+<title>Comprar Menos Veces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    color-scheme: light;
+    --ground:#f4f6f8; --surface:#ffffff; --surface-sunk:#eceff3;
+    --ink:#111820; --ink-2:#44505d; --ink-3:#727e8b;
+    --rule:#dbe1e7; --rule-strong:#bcc5ce;
+    --accent:#0f5c8c; --accent-soft:#e3eef6;
+    --risk:#a8271f; --risk-soft:#fbe7e5;
+    --ok:#166a48; --ok-soft:#e2f1ea;
+    --display:'Archivo','Segoe UI',system-ui,sans-serif;
+    --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground:#0d1217; --surface:#151d25; --surface-sunk:#1c262f;
+      --ink:#eaeff4; --ink-2:#aab6c2; --ink-3:#7d8995;
+      --rule:#26323c; --rule-strong:#36444f;
+      --accent:#63aeda; --accent-soft:#102c3f;
+      --risk:#e8756a; --risk-soft:#331613;
+      --ok:#55b98c; --ok-soft:#10291f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground:#0d1217; --surface:#151d25; --surface-sunk:#1c262f;
+    --ink:#eaeff4; --ink-2:#aab6c2; --ink-3:#7d8995;
+    --rule:#26323c; --rule-strong:#36444f;
+    --accent:#63aeda; --accent-soft:#102c3f;
+    --risk:#e8756a; --risk-soft:#331613;
+    --ok:#55b98c; --ok-soft:#10291f;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:var(--body);font-size:17.5px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding-inline:22px;padding-block:0 80px}
+  h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--ink-3);
+  }
+  p{margin:0 0 16px;max-width:62ch}
+  p:last-child{margin-bottom:0}
+  strong{font-weight:600}
+
+  header{padding-block:52px 32px;border-bottom:3px solid var(--rule-strong);display:grid;gap:20px}
+  header h1{font-size:clamp(34px,6vw,54px);font-weight:700;letter-spacing:-.022em;line-height:1.02}
+  .tesis{font-size:clamp(18px,2.4vw,21px);color:var(--ink-2);max-width:56ch;line-height:1.5}
+
+  section{padding-block:46px;border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:none}
+  h2{font-size:clamp(23px,3.4vw,30px);font-weight:600;letter-spacing:-.012em;margin-bottom:18px}
+
+  /* Comparación central */
+  .antes-despues{
+    display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch;
+    margin-block:8px 26px;
+  }
+  .lado{
+    background:var(--surface);border:1px solid var(--rule);padding:26px 24px;
+    display:grid;gap:6px;align-content:center;
+  }
+  .lado.hoy{border-top:4px solid var(--risk)}
+  .lado.plan{border-top:4px solid var(--ok)}
+  .lado .rotulo{
+    font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-3);
+  }
+  .lado .cifra{
+    font-family:var(--display);font-size:clamp(54px,11vw,78px);font-weight:700;
+    line-height:.95;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+  }
+  .lado.hoy .cifra{color:var(--risk)}
+  .lado.plan .cifra{color:var(--ok)}
+  .lado .unidad{font-size:17px;color:var(--ink-2)}
+  .lado .apoyo{font-family:var(--mono);font-size:13.5px;color:var(--ink-3);margin-top:4px}
+  .flecha{
+    display:grid;place-items:center;font-family:var(--mono);
+    font-size:15px;color:var(--ink-3);white-space:nowrap;
+  }
+  @media (max-width:680px){
+    .antes-despues{grid-template-columns:1fr}
+    .flecha{padding-block:4px}
+  }
+
+  /* Datos de evidencia */
+  .evidencia{display:grid;gap:14px;margin-top:10px}
+  .dato{
+    display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:baseline;
+    background:var(--surface);border:1px solid var(--rule);padding:20px 22px;
+  }
+  .dato .n{
+    font-family:var(--display);font-size:clamp(32px,5.5vw,42px);font-weight:700;
+    line-height:1;color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .dato .txt{font-size:16.5px;color:var(--ink-2);line-height:1.5}
+  .dato .txt b{color:var(--ink);font-weight:600}
+  @media (max-width:560px){.dato{grid-template-columns:1fr;gap:6px}}
+
+  /* Palancas */
+  .palanca{
+    display:grid;grid-template-columns:44px 1fr;gap:20px;
+    padding-block:22px;border-top:1px solid var(--rule);
+  }
+  .palanca:first-of-type{border-top:2px solid var(--rule-strong)}
+  .palanca .num{
+    font-family:var(--display);font-size:28px;font-weight:700;
+    color:var(--accent);line-height:1.1;
+  }
+  .palanca h3{font-size:19.5px;font-weight:600;margin-bottom:6px}
+  .palanca p{margin:0;font-size:16.5px;color:var(--ink-2)}
+  .palanca .flujo{
+    font-family:var(--mono);font-size:15px;color:var(--ink);
+    background:var(--surface-sunk);padding:8px 14px;margin-top:10px;display:inline-block;
+  }
+  @media (max-width:560px){.palanca{grid-template-columns:1fr;gap:8px}}
+
+  /* Dinero */
+  .cuenta{background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--accent)}
+  .cuenta-fila{
+    display:flex;justify-content:space-between;align-items:baseline;gap:18px;
+    padding:15px 24px;border-bottom:1px solid var(--rule);
+  }
+  .cuenta-fila:last-child{border-bottom:none}
+  .cuenta-fila.total{background:var(--ok-soft)}
+  .cuenta-fila .concepto{font-size:16.5px;color:var(--ink-2)}
+  .cuenta-fila.total .concepto{color:var(--ink);font-weight:600;font-size:18px}
+  .cuenta-fila .monto{
+    font-family:var(--mono);font-size:18px;font-weight:600;
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .cuenta-fila.resta .monto{color:var(--risk)}
+  .cuenta-fila.total .monto{font-size:23px;color:var(--ok)}
+
+  .nota{
+    background:var(--surface);border-left:4px solid var(--accent);
+    padding:18px 22px;font-size:16.5px;color:var(--ink-2);
+  }
+  .nota b{color:var(--ink)}
+  .nota.franca{border-left-color:var(--risk)}
+
+  footer{
+    padding-block:30px;border-top:3px solid var(--rule-strong);
+    font-family:var(--mono);font-size:12.5px;color:var(--ink-3);display:grid;gap:6px;
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Diagnóstico de compras · Plásticos Nacionales</div>
+  <h1>Comprar Menos Veces</h1>
+  <p class="tesis">
+    No compramos de más. Compramos demasiadas veces. Se puede reducir el papeleo
+    de compras en un 90 % sin comprar un sol menos de material.
+  </p>
+</header>
+
+<section>
+  <h2>El problema</h2>
+  <p>
+    Cada mes se emiten <strong>655 órdenes de compra</strong>. Eso son 25 documentos
+    por día: cada uno con su cotización, su aprobación, su seguimiento y su recepción
+    por separado. El equipo de compras se pasa el día emitiendo papeles en lugar de
+    negociar precios y plazos.
+  </p>
+
+  <div class="evidencia">
+    <div class="dato">
+      <div class="n">64 %</div>
+      <div class="txt">
+        de las órdenes tienen <b>una sola línea</b>. Se emite un documento completo
+        para comprar un solo artículo.
+      </div>
+    </div>
+    <div class="dato">
+      <div class="n">5.437</div>
+      <div class="txt">
+        órdenes al año se le giran a un proveedor <b>al que ya se le compró ese mismo
+        mes</b>. Podían haber ido en la misma orden.
+      </div>
+    </div>
+    <div class="dato">
+      <div class="n">78</div>
+      <div class="txt">
+        órdenes distintas a <b>un solo proveedor en un solo mes</b>. Es el caso más
+        extremo, pero no el único.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>La solución</h2>
+  <p>
+    Dos cambios en la forma de ordenar. Ninguno exige comprar menos material ni
+    cambiar de proveedores.
+  </p>
+
+  <div class="palanca">
+    <div class="num">1</div>
+    <div>
+      <h3>Una sola orden por proveedor al mes</h3>
+      <p>
+        Todo lo que se le compre a un proveedor durante el mes va en el mismo
+        documento, con tantas líneas como haga falta. Emitir una orden con veinte
+        líneas cuesta lo mismo que emitir una con una sola.
+      </p>
+      <div class="flujo">655 al mes &nbsp;→&nbsp; 202 al mes</div>
+    </div>
+  </div>
+
+  <div class="palanca">
+    <div class="num">2</div>
+    <div>
+      <h3>Comprar más seguido solo a los proveedores grandes</h3>
+      <p>
+        De los 230 proveedores, solo <strong>21 concentran el 71 % de la compra</strong>
+        y necesitan atención mensual. A los otros 209 se les junta el pedido y se les
+        compra cada dos, tres, seis o doce meses. A noventa y cinco de ellos, una sola
+        vez al año.
+      </p>
+      <div class="flujo">202 al mes &nbsp;→&nbsp; 63 al mes</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>El resultado</h2>
+
+  <div class="antes-despues">
+    <div class="lado hoy">
+      <div class="rotulo">Hoy</div>
+      <div class="cifra">655</div>
+      <div class="unidad">órdenes al mes</div>
+      <div class="apoyo">7.862 al año · 25 por día</div>
+    </div>
+    <div class="flecha">─────▶</div>
+    <div class="lado plan">
+      <div class="rotulo">Con el plan</div>
+      <div class="cifra">63</div>
+      <div class="unidad">órdenes al mes</div>
+      <div class="apoyo">753 al año · 3 por día</div>
+    </div>
+  </div>
+
+  <p>
+    Se compra el mismo material, a los mismos proveedores, por el mismo dinero.
+    Lo que baja es la cantidad de documentos que hay que emitir, aprobar, perseguir
+    y recibir.
+  </p>
+</section>
+
+<section>
+  <h2>Lo que cuesta y lo que devuelve</h2>
+
+  <div class="cuenta">
+    <div class="cuenta-fila">
+      <span class="concepto">Ahorro en gestión de compras</span>
+      <span class="monto">S/ 319.905</span>
+    </div>
+    <div class="cuenta-fila resta">
+      <span class="concepto">Costo de mantener algo más de inventario</span>
+      <span class="monto">− S/ 34.175</span>
+    </div>
+    <div class="cuenta-fila total">
+      <span class="concepto">Beneficio neto al año</span>
+      <span class="monto">S/ 285.730</span>
+    </div>
+  </div>
+
+  <p style="margin-top:20px">
+    Para empezar hace falta una <strong>compra inicial de S/ 155.343</strong>, por
+    única vez. Es el inventario que permite espaciar las compras sin quedarse sin
+    material: equivale a poco más de tres semanas de consumo. Hoy casi todo el
+    almacén trabaja en cero, y por eso cada pedido de planta obliga a comprar en el
+    acto.
+  </p>
+</section>
+
+<section>
+  <h2>Una advertencia honesta</h2>
+  <div class="nota franca">
+    <p style="margin:0">
+      La reducción de <b>655 a 63 órdenes</b> está medida sobre las compras reales de
+      los últimos doce meses y no depende de ningún supuesto.
+    </p>
+    <p style="margin:12px 0 0">
+      La cifra de ahorro, en cambio, sí: se calculó estimando que emitir una orden le
+      cuesta a la empresa <b>S/ 45</b> entre tiempo de compras, aprobación,
+      seguimiento, recepción y contabilidad. Si el costo real resultara ser S/ 20, el
+      ahorro bajaría a unos S/ 123.000. <b>Conviene medir ese dato antes de
+      comprometer la cifra.</b>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div>Elaborado sobre los movimientos reales del sistema NetComercial</div>
+  <div>7.862 órdenes de compra y 230 proveedores analizados · periodo 1 set. 2025 – 31 ago. 2026</div>
+</footer>
+
+</div>

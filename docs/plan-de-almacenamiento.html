@@ -1,0 +1,651 @@
+<title>Un Lugar Para Cada Material</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    color-scheme: light;
+    --ground:#f4f6f8; --surface:#ffffff; --surface-sunk:#eceff3;
+    --ink:#131a21; --ink-2:#4e5a67; --ink-3:#7c8794;
+    --rule:#dde2e8; --rule-strong:#c3cbd4;
+    --accent:#0f5c8c; --accent-soft:#e3eef6; --accent-ink:#0b4569;
+    --signal:#b86514; --signal-soft:#fbeedd;
+    --risk:#a8271f; --risk-soft:#fbe7e5;
+    --ok:#166a48; --ok-soft:#e2f1ea;
+    --zonaA:#0f5c8c; --zonaB:#4a8db5; --zonaC:#8aa9bd; --especial:#b86514;
+    --display:'Archivo','Segoe UI',system-ui,sans-serif;
+    --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground:#0d1217; --surface:#141b22; --surface-sunk:#1b242d;
+      --ink:#e8edf2; --ink-2:#a5b1bd; --ink-3:#78848f;
+      --rule:#24303a; --rule-strong:#33414e;
+      --accent:#5aa8d8; --accent-soft:#102c3f; --accent-ink:#8cc6ec;
+      --signal:#e39b4e; --signal-soft:#33220f;
+      --risk:#e8756a; --risk-soft:#331613;
+      --ok:#55b98c; --ok-soft:#10291f;
+      --zonaA:#5aa8d8; --zonaB:#3d7ba3; --zonaC:#2b5670; --especial:#e39b4e;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground:#0d1217; --surface:#141b22; --surface-sunk:#1b242d;
+    --ink:#e8edf2; --ink-2:#a5b1bd; --ink-3:#78848f;
+    --rule:#24303a; --rule-strong:#33414e;
+    --accent:#5aa8d8; --accent-soft:#102c3f; --accent-ink:#8cc6ec;
+    --signal:#e39b4e; --signal-soft:#33220f;
+    --risk:#e8756a; --risk-soft:#331613;
+    --ok:#55b98c; --ok-soft:#10291f;
+    --zonaA:#5aa8d8; --zonaB:#3d7ba3; --zonaC:#2b5670; --especial:#e39b4e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
+       font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1100px;margin:0 auto;padding-inline:20px;padding-block:0 72px}
+  h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+           text-transform:uppercase;color:var(--ink-3)}
+  header{border-bottom:2px solid var(--rule-strong);padding-block:44px 28px;display:grid;gap:18px}
+  header h1{font-size:clamp(30px,5.6vw,48px);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+  .lede{font-size:clamp(16px,2vw,18.5px);color:var(--ink-2);max-width:62ch}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--mono);
+            font-size:12px;color:var(--ink-3)}
+  .meta-row b{color:var(--ink-2);font-weight:500}
+  section{padding-block:44px;border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:none}
+  .sec-head{display:grid;gap:8px;margin-bottom:26px;max-width:72ch}
+  .sec-head h2{font-size:clamp(21px,3vw,27px);font-weight:600;letter-spacing:-.01em}
+  .sec-head p{margin:0;color:var(--ink-2)}
+  p{margin:0 0 14px;max-width:70ch}
+  p:last-child{margin-bottom:0}
+
+  .mapa{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .zona{border:1px solid var(--rule);background:var(--surface);overflow:hidden;
+        display:grid;grid-template-rows:auto 1fr}
+  .zona-cab{padding:12px 16px;color:#fff;display:flex;justify-content:space-between;
+            align-items:baseline;gap:10px}
+  .zona-cab .letra{font-family:var(--display);font-size:26px;font-weight:700;line-height:1}
+  .zona-cab .pct{font-family:var(--mono);font-size:12px}
+  .zona-body{padding:14px 16px;display:grid;gap:8px;align-content:start}
+  .zona-body .donde{font-weight:600;font-size:14.5px;margin:0}
+  .zona-body .que{font-size:13.5px;color:var(--ink-2);margin:0}
+  .zona-body dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;
+                margin:0;font-size:12.5px}
+  .zona-body dt{color:var(--ink-3)}
+  .zona-body dd{margin:0;font-family:var(--mono);color:var(--ink);text-align:right}
+
+  .scroll{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+  table{width:100%;min-width:640px;border-collapse:collapse;font-size:14px}
+  thead th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+           text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 14px;
+           background:var(--surface-sunk);border-bottom:1px solid var(--rule);white-space:nowrap}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  td.name{font-weight:500}
+  .sub{color:var(--ink-3);font-size:12.5px}
+
+  .fichas{display:grid;gap:14px}
+  .ficha{border:1px solid var(--rule);background:var(--surface);
+         border-left:4px solid var(--accent);padding:18px 20px;display:grid;gap:12px}
+  .ficha.peligro{border-left-color:var(--risk)}
+  .ficha.cuidado{border-left-color:var(--signal)}
+  .ficha-cab{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:baseline}
+  .ficha-cab h3{font-size:18px;font-weight:600}
+  .ficha-cab .cifras{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  .ficha-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+  .campo{display:grid;gap:3px;margin:0}
+  .campo dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+            text-transform:uppercase;color:var(--ink-3)}
+  .campo dd{margin:0;font-size:13.5px;color:var(--ink)}
+  .riesgo{background:var(--risk-soft);color:var(--ink);padding:9px 12px;font-size:13px;
+          border-left:3px solid var(--risk);margin:0;max-width:none}
+  .riesgo b{color:var(--risk)}
+
+  .etiqueta{background:var(--surface);border:2px solid var(--ink);padding:14px 16px;
+            max-width:400px;display:grid;gap:6px;font-family:var(--mono)}
+  .etiqueta .ubic{font-family:var(--display);font-size:30px;font-weight:700;
+                  letter-spacing:.04em;line-height:1}
+  .etiqueta .cod{font-size:17px;font-weight:600}
+  .etiqueta .desc{font-size:12px;color:var(--ink-2);font-family:var(--body);line-height:1.35}
+  .etiqueta .pie{display:flex;justify-content:space-between;font-size:10.5px;
+                 color:var(--ink-3);border-top:1px solid var(--rule);padding-top:6px}
+
+  .callout{border-left:3px solid var(--signal);background:var(--signal-soft);
+           padding:12px 16px;font-size:14.5px;display:grid;gap:4px}
+  .callout.risk{border-left-color:var(--risk);background:var(--risk-soft)}
+  .callout.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+  .callout b{font-weight:600}
+
+  .pasos{display:grid;gap:0}
+  .paso{display:grid;grid-template-columns:52px 1fr;gap:18px;padding-block:20px;
+        border-top:1px solid var(--rule)}
+  .paso:first-child{border-top:2px solid var(--rule-strong)}
+  .paso-n{font-family:var(--display);font-size:24px;font-weight:700;color:var(--accent);line-height:1.1}
+  .paso-body{display:grid;gap:7px}
+  .paso-body h3{font-size:17px;font-weight:600}
+  .paso-body p{margin:0}
+  .paso-body ul{margin:0;padding-left:18px;color:var(--ink-2);display:grid;gap:4px}
+  @media (max-width:560px){.paso{grid-template-columns:1fr;gap:8px}}
+
+  footer{padding-block:28px;border-top:2px solid var(--rule-strong);
+         font-family:var(--mono);font-size:11.5px;color:var(--ink-3);display:grid;gap:6px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Plan de almacenamiento · Plásticos Nacionales</div>
+  <h1>Un Lugar Para Cada Material</h1>
+  <p class="lede">
+    Ningún material entra al almacén sin tener una ubicación asignada antes de llegar.
+    Ocho naturalezas de material, tres zonas por rotación y cuatro áreas cerradas.
+  </p>
+  <div class="meta-row">
+    <span><b>Alcance:</b> 1.649 materiales del plan de compra vigente</span>
+    <span><b>Base:</b> 12 meses de movimientos reales de almacén</span>
+    <span><b>Excluye:</b> materia prima y aceros, que tienen almacén propio</span>
+  </div>
+</header>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Principio</div>
+    <h2>La ubicación se decide antes de comprar, no cuando llega el camión</h2>
+    <p>
+      Un material sin ubicación asignada termina en el piso, al aire libre o en un rincón que
+      solo una persona conoce. Por eso la ubicación es parte de la orden de compra: cuando se
+      aprueba qué comprar, ya está definido dónde va a dormir.
+    </p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Naturaleza del material</th>
+          <th class="num">Códigos</th>
+          <th class="num">Unidades</th>
+          <th class="num">Viajes/año</th>
+          <th class="num">Valor</th>
+          <th>Dónde va</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">Sensible a luz y polvo<br><span class="sub">bolsas, lainas, etiquetas, film</span></td>
+          <td class="num">95</td><td class="num">184.990</td><td class="num">10.191</td><td class="num">S/ 48.129</td>
+          <td>Rack de pallets, zonas A y C</td>
+        </tr>
+        <tr>
+          <td class="name">General<br><span class="sub">repuestos y suministros</span></td>
+          <td class="num">1.098</td><td class="num">4.380</td><td class="num">4.729</td><td class="num">S/ 37.600</td>
+          <td>Estantería de gavetas</td>
+        </tr>
+        <tr>
+          <td class="name">Herramienta de filo</td>
+          <td class="num">169</td><td class="num">198</td><td class="num">527</td><td class="num">S/ 6.950</td>
+          <td>Gabinete con llave</td>
+        </tr>
+        <tr>
+          <td class="name">Corrosible<br><span class="sub">acero, pernos, rodamientos</span></td>
+          <td class="num">124</td><td class="num">350</td><td class="num">413</td><td class="num">S/ 3.920</td>
+          <td>Estantería seca, nivel alto</td>
+        </tr>
+        <tr>
+          <td class="name">Químico</td>
+          <td class="num">81</td><td class="num">238</td><td class="num">597</td><td class="num">S/ 12.394</td>
+          <td>Armario ventilado con contención</td>
+        </tr>
+        <tr>
+          <td class="name">Protección personal</td>
+          <td class="num">47</td><td class="num">748</td><td class="num">920</td><td class="num">S/ 3.232</td>
+          <td>Estantería cerrada en entrega</td>
+        </tr>
+        <tr>
+          <td class="name">Electrónico</td>
+          <td class="num">31</td><td class="num">8</td><td class="num">79</td><td class="num">S/ 1.802</td>
+          <td>Gabinete con llave, antiestático</td>
+        </tr>
+        <tr>
+          <td class="name">Inflamable</td>
+          <td class="num">4</td><td class="num">6</td><td class="num">36</td><td class="num">S/ 480</td>
+          <td>Armario antifuego separado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Distribución</div>
+    <h2>Tres zonas por rotación, cuatro áreas cerradas</h2>
+    <p>
+      La zona no la decide el tamaño del material sino cuántas veces al año alguien va a
+      buscarlo. Medido sobre 12 meses: <strong>16 códigos concentran el 49 % de todos los
+      viajes al almacén</strong>, y los quince primeros son bolsas de polietileno.
+    </p>
+  </div>
+
+  <div class="mapa">
+    <article class="zona">
+      <div class="zona-cab" style="background:var(--zonaA)">
+        <span class="letra">A</span><span class="pct">49 % de los viajes</span>
+      </div>
+      <div class="zona-body">
+        <p class="donde">Frente, junto a despacho</p>
+        <p class="que">Rack a nivel de piso y primer nivel. Sin escalera y sin montacargas para sacar una unidad.</p>
+        <dl>
+          <dt>Códigos</dt><dd>16</dd>
+          <dt>Viajes/año</dt><dd>8.644</dd>
+          <dt>Contenido</dt><dd>Bolsas PE</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="zona">
+      <div class="zona-cab" style="background:var(--zonaB)">
+        <span class="letra">B</span><span class="pct">31 % de los viajes</span>
+      </div>
+      <div class="zona-body">
+        <p class="donde">Pasillo central, altura media</p>
+        <p class="que">Entre 0,80 m y 1,60 m: la franja que se alcanza sin agacharse ni subir.</p>
+        <dl>
+          <dt>Códigos</dt><dd>96</dd>
+          <dt>Viajes/año</dt><dd>5.453</dd>
+          <dt>Contenido</dt><dd>Mixto</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="zona">
+      <div class="zona-cab" style="background:var(--zonaC)">
+        <span class="letra">C</span><span class="pct">20 % de los viajes</span>
+      </div>
+      <div class="zona-body">
+        <p class="donde">Fondo y niveles altos</p>
+        <p class="que">Lo que se toca pocas veces al año. Aquí van las lainas y discos: mucho volumen, casi sin movimiento.</p>
+        <dl>
+          <dt>Códigos</dt><dd>1.505</dd>
+          <dt>Viajes/año</dt><dd>3.544</dd>
+          <dt>Contenido</dt><dd>Cola larga</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="zona">
+      <div class="zona-cab" style="background:var(--especial)">
+        <span class="letra">E</span><span class="pct">Áreas cerradas</span>
+      </div>
+      <div class="zona-body">
+        <p class="donde">Fuera del flujo de picking</p>
+        <p class="que">Químicos ventilados, inflamables antifuego, filo y electrónica bajo llave, EPP en el mostrador.</p>
+        <dl>
+          <dt>Códigos</dt><dd>332</dd>
+          <dt>Valor</dt><dd>S/ 24.458</dd>
+          <dt>Acceso</dt><dd>Restringido</dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+
+  <div class="callout" style="margin-top:22px">
+    <b>El contraste que ordena el almacén</b>
+    <span>
+      Las bolsas mueven 10.191 viajes al año en 43 códigos. Las lainas y discos ocupan
+      <em>más</em> volumen —95.189 unidades— pero solo generan 196 viajes. Ponerlas donde es
+      cómodo desperdicia el mejor espacio: van al fondo, apiladas en altura.
+    </span>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Condiciones</div>
+    <h2>Cómo se guarda cada naturaleza</h2>
+    <p>Qué necesita, qué lo arruina y qué pasa si se guarda mal.</p>
+  </div>
+
+  <div class="fichas">
+
+    <article class="ficha">
+      <div class="ficha-cab">
+        <h3>Bolsas, lainas, etiquetas y film</h3>
+        <span class="cifras">95 códigos · 184.990 und · S/ 48.129</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Rack de pallets. Fardos sobre parihuela, nunca directo al piso.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Techado y seco, sin luz solar directa. Por debajo de 30 °C.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Film stretch o funda sobre el fardo abierto. Parihuela plástica, no madera húmeda.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Bolsas en zona A, piso y nivel 1. Lainas y discos en zona C, apilados.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Si se guarda mal:</b> el polietileno expuesto al sol se vuelve quebradizo en pocas semanas. Las lainas absorben humedad y fallan el sellado por inducción — el defecto se descubre en planta, con el producto ya envasado.</p>
+    </article>
+
+    <article class="ficha cuidado">
+      <div class="ficha-cab">
+        <h3>Repuestos y suministros generales</h3>
+        <span class="cifras">1.098 códigos · 4.729 viajes/año · S/ 37.600</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Estantería de gavetas plásticas. Una gaveta por código, sin excepción.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Techado y seco. Sin exigencia térmica.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Gaveta con tapa para piezas pequeñas. Bolsa individual para lo que se confunde entre sí.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Zona B lo frecuente, zona C el resto.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Si se guarda mal:</b> es el grupo con más códigos y el que más se pierde. Dos referencias parecidas en la misma gaveta terminan en compra duplicada o en entrega equivocada a planta.</p>
+    </article>
+
+    <article class="ficha peligro">
+      <div class="ficha-cab">
+        <h3>Químicos: pinturas, aceites, solventes, adhesivos</h3>
+        <span class="cifras">81 códigos · 244 und · S/ 12.394</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Armario metálico ventilado, con bandeja de contención bajo cada nivel.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Ventilación permanente, 15–25 °C, sin sol directo ni fuentes de calor.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Envase original cerrado y etiquetado. Nunca trasvasar a envases sin identificar.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Área cerrada, fuera del pasillo y <strong>lejos del material de empaque</strong>.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Si se guarda mal:</b> un derrame sobre bolsas o lainas contamina material que toca producto de consumo. El riesgo no es el costo del químico: es perder el lote de empaque y, si llega a planta, el producto envasado.</p>
+    </article>
+
+    <article class="ficha peligro">
+      <div class="ficha-cab">
+        <h3>Inflamables</h3>
+        <span class="cifras">4 códigos · S/ 480</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Armario antifuego separado, con puesta a tierra.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Ventilado y señalizado. Extintor a menos de 5 m.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Envase original. Cantidad mínima en almacén; no se compran por adelantado.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Área cerrada, alejada de todo lo demás.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Son solo cuatro:</b> solvente dieléctrico SQP-353, disolvente, alcohol isopropílico 70 % y thinner acrílico AC-350. Suman S/ 480 y concentran todo el riesgo de incendio del almacén. Separarlos cuesta un armario.</p>
+    </article>
+
+    <article class="ficha cuidado">
+      <div class="ficha-cab">
+        <h3>Corrosibles: acero, pernos, rodamientos</h3>
+        <span class="cifras">124 códigos · 350 und · S/ 3.920</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Estantería metálica, nivel medio o alto. Nunca a nivel de piso.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Seco, con humedad relativa por debajo del 60 %.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Rodamientos en su empaque sellado hasta el momento de uso. Papel antioxidante en piezas desnudas.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Zona C, lejos de químicos y de cualquier ingreso de agua.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Si se guarda mal:</b> un rodamiento con óxido superficial ya no sirve y no se nota hasta montarlo. Abrir el empaque «para ver qué es» arruina la pieza — por eso la etiqueta debe decirlo sin abrir.</p>
+    </article>
+
+    <article class="ficha">
+      <div class="ficha-cab">
+        <h3>Herramienta de filo y electrónica</h3>
+        <span class="cifras">200 códigos · S/ 8.752 · 204 códigos sobre S/ 200 la unidad</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Gabinete con llave, cajonera clasificada por tipo y medida.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Seco. La electrónica, en bolsa antiestática.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Cada inserto o fresa en su estuche. Nada suelto en cajón común.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Zona C bajo llave: son de baja rotación, no necesitan acceso rápido.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Si se guarda mal:</b> aquí está el material más caro por unidad, hasta S/ 5.898 una sola pieza. Los filos que se golpean entre sí quedan inservibles, y son las piezas más fáciles de que desaparezcan.</p>
+    </article>
+
+    <article class="ficha">
+      <div class="ficha-cab">
+        <h3>Equipo de protección personal</h3>
+        <span class="cifras">47 códigos · 748 und · 920 viajes/año</span>
+      </div>
+      <div class="ficha-grid">
+        <dl class="campo"><dt>Almacenamiento</dt><dd>Estantería cerrada, separada por talla.</dd></dl>
+        <dl class="campo"><dt>Condiciones</dt><dd>Seco y limpio. Sin contacto con químicos ni solventes.</dd></dl>
+        <dl class="campo"><dt>Protección</dt><dd>Empaque original. Guantes y respiradores tienen vencimiento: rotar por fecha.</dd></dl>
+        <dl class="campo"><dt>Ubicación</dt><dd>Junto al mostrador de entrega al personal.</dd></dl>
+      </div>
+      <p class="riesgo"><b>Si se guarda mal:</b> un respirador vencido o un guante contaminado con solvente es peor que no tener EPP, porque da una protección que en realidad no existe. La rotación por fecha no es opcional.</p>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Identificación</div>
+    <h2>Dos etiquetas: una en la ubicación, otra en el material</h2>
+    <p>
+      La ubicación se nombra con un código corto y memorizable. La etiqueta de estante no
+      lleva cantidad: cambia todos los días y nadie la mantiene al día.
+    </p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;align-items:start">
+    <div>
+      <h4 style="font-size:14px;margin-bottom:10px">Etiqueta de ubicación</h4>
+      <div class="etiqueta">
+        <div class="ubic">A-02-N1-05</div>
+        <div class="cod">10004918</div>
+        <div class="desc">BOLSAS PE 27.5" × 50" × 1.8 C/F 2.5</div>
+        <div class="pie"><span>IVOM PLAST</span><span>UND · ZONA A</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--ink-3);margin-top:10px">
+        <strong>A</strong> zona · <strong>02</strong> rack · <strong>N1</strong> nivel ·
+        <strong>05</strong> posición. Cuatro datos, se dicta por radio sin equivocarse.
+      </p>
+    </div>
+
+    <div>
+      <h4 style="font-size:14px;margin-bottom:10px">Reglas de la etiqueta</h4>
+      <ul style="margin:0;padding-left:18px;color:var(--ink-2);display:grid;gap:7px;font-size:14px">
+        <li><strong>Código y descripción completos.</strong> Que no haya que abrir el empaque para saber qué es: abrirlo arruina rodamientos y filos.</li>
+        <li><strong>Sin cantidad impresa.</strong> La cantidad vive en el sistema, no en el estante.</li>
+        <li><strong>Una ubicación por código.</strong> Si no cabe, se asigna una segunda y ambas se rotulan «2 de 2».</li>
+        <li><strong>Color por naturaleza:</strong> azul general · naranja químico · rojo inflamable · verde EPP.</li>
+        <li><strong>Vencimiento visible</strong> en EPP, adhesivos y químicos.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout ok" style="margin-top:22px">
+    <b>La ubicación también vive en el sistema</b>
+    <span>
+      La etiqueta física se despega o se pierde. El dato maestro es el archivo de ubicaciones
+      de la plataforma: código → ubicación asignada. Quien no encuentra algo lo busca ahí, no
+      preguntándole al almacenero.
+    </span>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Control</div>
+    <h2>Que lo que dice el sistema sea lo que hay en el estante</h2>
+    <p>
+      Hoy el 20 % de las salidas se despacha sin referenciar el requerimiento que las pidió.
+      Cada una de esas rompe el cálculo del ciclo siguiente: el sistema cree que sigue
+      pendiente algo ya entregado, y vuelve a comprarlo.
+    </p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Momento</th><th>Qué se hace</th><th>Por qué</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">Antes de comprar</td>
+          <td>Se asigna la ubicación en la orden. Sin ubicación, la orden no se gira.</td>
+          <td>Es lo único que evita que el material llegue y no tenga dónde ir.</td>
+        </tr>
+        <tr>
+          <td class="name">Al recibir</td>
+          <td>Parte de ingreso el mismo día, y el material va directo a su ubicación rotulada.</td>
+          <td>El material que se queda «un rato» en el pasillo es el que termina al aire libre.</td>
+        </tr>
+        <tr>
+          <td class="name">Al entregar</td>
+          <td>Salida interna <strong>siempre</strong> referenciando el requerimiento que la originó.</td>
+          <td>Sin esa referencia el requerimiento queda abierto para siempre y se vuelve a comprar.</td>
+        </tr>
+        <tr>
+          <td class="name">Semanal</td>
+          <td>Conteo cíclico de 20 códigos de zona A.</td>
+          <td>Son 16 códigos con el 49 % de los movimientos: si algo se descuadra, es ahí.</td>
+        </tr>
+        <tr>
+          <td class="name">Mensual</td>
+          <td>Conteo de zona B y revisión de saldos negativos.</td>
+          <td>Un saldo negativo no es inventario: es un despacho sin registrar.</td>
+        </tr>
+        <tr>
+          <td class="name">Trimestral</td>
+          <td>Barrido de zona C y revisión de lo que no tuvo movimiento.</td>
+          <td>27 códigos comprados no registraron ni una salida en 12 meses.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Inversión</div>
+    <h2>Qué hay que comprar para poder almacenar así</h2>
+    <p>
+      Cantidades calculadas sobre los 1.649 códigos del plan: una posición por código en
+      estantería, y áreas cerradas dimensionadas por el número de referencias de cada tipo.
+    </p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Elemento</th><th class="num">Cantidad</th><th>Para qué</th><th>Prioridad</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="name">Cuerpos de estantería con gavetas</td><td class="num">36</td>
+          <td>1.422 gavetas, una por código de repuestos y suministros</td><td>Alta</td></tr>
+        <tr><td class="name">Gavetas plásticas surtidas</td><td class="num">1.500</td>
+          <td>Una por código, con margen para altas nuevas</td><td>Alta</td></tr>
+        <tr><td class="name">Armario metálico ventilado con contención</td><td class="num">2</td>
+          <td>85 códigos de químicos, S/ 12.874 en existencias</td><td>Alta</td></tr>
+        <tr><td class="name">Armario antifuego</td><td class="num">1</td>
+          <td>4 códigos inflamables, único riesgo de incendio</td><td>Alta</td></tr>
+        <tr><td class="name">Gabinete con llave y cajonera</td><td class="num">2</td>
+          <td>200 códigos de filo y electrónica; 204 sobre S/ 200 la unidad</td><td>Alta</td></tr>
+        <tr><td class="name">Estantería cerrada para EPP</td><td class="num">2</td>
+          <td>47 códigos separados por talla, junto a entrega</td><td>Media</td></tr>
+        <tr><td class="name">Parihuelas plásticas</td><td class="num">a definir</td>
+          <td>Bolsas y lainas nunca directo al piso; depende de la medición de empaque</td><td>Alta</td></tr>
+        <tr><td class="name">Rack de pallets</td><td class="num">a definir</td>
+          <td>95 códigos, 184.990 unidades; requiere las medidas de caja</td><td>Alta</td></tr>
+        <tr><td class="name">Etiquetas de ubicación y de material</td><td class="num">3.300</td>
+          <td>1.649 de material más 1.649 de ubicación</td><td>Alta</td></tr>
+        <tr><td class="name">Impresora térmica de etiquetas</td><td class="num">1</td>
+          <td>Reimprimir sin depender de un proveedor externo</td><td>Media</td></tr>
+        <tr><td class="name">Señalización de zonas y pasillos</td><td class="num">1 juego</td>
+          <td>Letreros A, B, C, áreas cerradas y numeración de racks</td><td>Media</td></tr>
+        <tr><td class="name">Film stretch y fundas</td><td class="num">consumible</td>
+          <td>Proteger del polvo los fardos abiertos</td><td>Media</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout" style="margin-top:20px">
+    <b>Dos partidas quedan sin cifra, a propósito</b>
+    <span>
+      El rack de pallets y las parihuelas dependen del volumen real, y el sistema
+      <strong>no guarda peso ni dimensiones de ningún material</strong> — cero de 1.649. Se
+      resuelve midiendo 25 códigos, que son el 91 % del volumen, o pidiendo el dato de empaque
+      a IVOM PLAST y CASTAÑEDA PALZA. Antes de eso, cualquier número de racks sería inventado.
+    </span>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Puesta en marcha</div>
+    <h2>En qué orden hacerlo</h2>
+    <p>
+      No se cierra el almacén para reorganizarlo. Se empieza por lo que más riesgo tiene y por
+      lo que más se mueve.
+    </p>
+  </div>
+
+  <div class="pasos">
+    <article class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <h3>Separar lo peligroso</h3>
+        <p>Antes que nada, sacar los 4 inflamables y los 81 químicos de donde estén y llevarlos a armario cerrado.</p>
+        <ul>
+          <li>Es el único riesgo que puede costar el almacén entero.</li>
+          <li>Verificar que ningún químico esté sobre o junto a material de empaque.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <h3>Montar la zona A</h3>
+        <p>Dieciséis códigos que son el 49 % de los viajes. Rack al frente, rotulado, a nivel de piso y primer nivel.</p>
+        <ul>
+          <li>Es el cambio que más tiempo ahorra por sí solo.</li>
+          <li>Se hace en un día y se nota desde el primero.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <h3>Cerrar lo caro</h3>
+        <p>Gabinete con llave para los 204 códigos sobre S/ 200 la unidad, empezando por los de más de S/ 1.000.</p>
+      </div>
+    </article>
+
+    <article class="paso">
+      <div class="paso-n">4</div>
+      <div class="paso-body">
+        <h3>Gaveta por código en zona B</h3>
+        <p>Los 96 códigos de rotación media, una gaveta y una etiqueta cada uno.</p>
+      </div>
+    </article>
+
+    <article class="paso">
+      <div class="paso-n">5</div>
+      <div class="paso-body">
+        <h3>Zona C por familias</h3>
+        <p>Los 1.505 restantes, agrupados por familia. Es el volumen de trabajo más grande y el menos urgente.</p>
+        <ul>
+          <li>Se puede hacer por tramos, una familia por semana.</li>
+          <li>Cada código que se ubica se anota en el archivo maestro, no en un papel.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="paso">
+      <div class="paso-n">6</div>
+      <div class="paso-body">
+        <h3>Cerrar el ciclo con la compra</h3>
+        <p>Desde aquí, ninguna orden se gira sin ubicación asignada. El material llega y ya sabe dónde va.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<footer>
+  <div>Elaborado sobre datos de producción de NetComercial · lectura del 15 set. 2026</div>
+  <div>1.649 materiales del plan de compra · 17.641 movimientos de almacén analizados · periodo 1 set. 2025 – 31 ago. 2026</div>
+</footer>
+
+</div>

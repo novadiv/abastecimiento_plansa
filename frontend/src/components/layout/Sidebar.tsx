@@ -1,4 +1,15 @@
-import { BarChart3, LayoutDashboard, LogOut, Repeat, Settings, ShoppingBag, Table2, X } from 'lucide-react';
+import {
+  BarChart3,
+  Bot,
+  ClipboardList,
+  LayoutDashboard,
+  LogOut,
+  Repeat,
+  Settings,
+  ShoppingBag,
+  Table2,
+  X,
+} from 'lucide-react';
 import type { Route } from '@/hooks/useHashRoute';
 import { useAuthContext } from '@/context/AuthContext';
 
@@ -10,10 +21,12 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { route: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { route: 'data', label: 'Datos', icon: Table2 },
+  { route: 'data', label: 'Productos', icon: Table2 },
   { route: 'analysis', label: 'Análisis', icon: BarChart3 },
   { route: 'mis-compras', label: 'Mis Compras', icon: ShoppingBag },
+  { route: 'abastecimiento', label: 'Plan de Abastecimiento', icon: ClipboardList },
   { route: 'rotacion', label: 'Materiales y Rotación', icon: Repeat },
+  { route: 'administracion', label: 'Administración', icon: Bot },
   { route: 'settings', label: 'Configuración', icon: Settings },
 ];
 

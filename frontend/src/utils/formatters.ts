@@ -61,8 +61,27 @@ export function formatDateTime(iso: string | null | undefined): string {
   }).format(date);
 }
 
+/** Detecta una fecha sin hora: "2026-09-14". */
+const SOLO_FECHA = /^(\d{4})-(\d{2})-(\d{2})$/;
+
 export function formatDate(value: string | number | null | undefined): string {
   if (value === null || value === undefined || value === '') return '—';
+
+  // `new Date("2026-09-14")` interpreta la cadena como medianoche UTC. Al
+  // mostrarla en Perú (UTC-5) retrocede al día anterior, así que el usuario
+  // filtraba "14/09" y leía "13 set." — parecía un error de datos y restaba
+  // credibilidad justo donde se están sustentando cifras. Cuando la cadena
+  // no lleva hora se construye la fecha en horario local, que es lo que el
+  // usuario escribió. Las marcas de tiempo completas no se tocan: ahí el
+  // desplazamiento horario sí es correcto.
+  if (typeof value === 'string') {
+    const partes = SOLO_FECHA.exec(value);
+    if (partes) {
+      const local = new Date(Number(partes[1]), Number(partes[2]) - 1, Number(partes[3]));
+      return new Intl.DateTimeFormat('es-PE', { dateStyle: 'medium' }).format(local);
+    }
+  }
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return String(value);
   return new Intl.DateTimeFormat('es-PE', { dateStyle: 'medium' }).format(date);

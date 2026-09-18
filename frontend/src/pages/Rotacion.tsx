@@ -21,7 +21,13 @@ function RotacionContent() {
     useRotacionContext();
 
   if (error && lastUpdated === null) return <ErrorState message={error} onRetry={refresh} />;
-  if (loading) return <CargaProgresoBanner progress={progress} />;
+  if (loading) {
+    return (
+      <CargaProgresoBanner
+        progress={progress ? { ...progress, totalUnidades: progress.materialesTotales } : null}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">

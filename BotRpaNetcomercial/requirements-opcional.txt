@@ -1,0 +1,4 @@
+# Solo si algún día el bot necesita LEER texto o números de la pantalla.
+# No hace falta para registrar órdenes de compra.
+pytesseract==0.3.13
+google-genai==1.2.0

@@ -1,13 +1,12 @@
-import type { Producto } from '@/types/producto';
-
 /**
- * Exportación de los productos actualmente visualizados (ya filtrados/paginados)
- * a CSV. Implementado sin dependencias externas — la librería `xlsx` fue
- * retirada del proyecto por vulnerabilidades conocidas sin parche (ver README).
+ * Exportación de filas (productos, catálogo completo, etc.) actualmente
+ * visualizadas a CSV. Implementado sin dependencias externas — la librería
+ * `xlsx` fue retirada del proyecto por vulnerabilidades conocidas sin parche
+ * (ver README). Genérico: cualquier fila con propiedades planas sirve.
  */
 
 export interface ExportColumn {
-  key: keyof Producto | string;
+  key: string;
   label: string;
 }
 
@@ -21,9 +20,9 @@ function escapeCsvValue(value: unknown): string {
 }
 
 
-export function exportToCSV(rows: Producto[], columns: ExportColumn[], fileName = 'productos.csv'): void {
+export function exportToCSV(rows: object[], columns: ExportColumn[], fileName = 'productos.csv'): void {
   const header = columns.map((c) => escapeCsvValue(c.label)).join(';');
-  const lines = rows.map((row) => columns.map((c) => escapeCsvValue(row[c.key as string])).join(';'));
+  const lines = rows.map((row) => columns.map((c) => escapeCsvValue((row as Record<string, unknown>)[c.key])).join(';'));
   const csv = [header, ...lines].join('\r\n');
 
 

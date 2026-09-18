@@ -32,10 +32,13 @@ interface ApiEnvelope<T> {
   data: T;
 }
 
-// consolidado-producto es una agregación pesada del lado del servidor: de forma
-// NORMAL tarda 15-18s por página de 200 materiales (medido directamente). El
-// timeout por defecto del cliente (20s) es demasiado justo para eso.
-const CONSOLIDADO_TIMEOUT_MS = 45_000;
+// consolidado-producto es una agregación pesada del lado del servidor con
+// latencia MUY variable (medido directamente: entre 2.5s y ~40s por página de
+// 200 materiales según la carga del servidor en ese momento). El timeout por
+// defecto del cliente (20s) es demasiado justo para los picos — se le da
+// margen amplio, y además cada página se reintenta hasta 3 veces (ver
+// `useConsolidadoResponsable.ts`) por si aun así se excede puntualmente.
+const CONSOLIDADO_TIMEOUT_MS = 60_000;
 
 export function fetchRequerimientosKpis(responsable: string, filters: MisComprasFilters): Promise<RequerimientosKpis> {
   return apiClient
@@ -111,7 +114,11 @@ export async function fetchRequerimientosFiltros(): Promise<RequerimientosFiltro
     estados_normalizados: string[];
   }>('/requerimientos/filtros');
 
-  const catalogo = await apiClient.get<{ success: boolean; proveedores: string[] }>('/requerimientos/consolidado-filtros');
+  // El endpoint real devuelve objetos {proveedor, n_ocs} (no strings, a pesar de lo que
+  // sugeriría el nombre "proveedores") — se extrae solo el nombre para los selects de filtro.
+  const catalogo = await apiClient.get<{ success: boolean; proveedores: { proveedor: string; n_ocs: number }[] }>(
+    '/requerimientos/consolidado-filtros',
+  );
 
   return {
     años: response.años ?? [],
@@ -119,6 +126,6 @@ export async function fetchRequerimientosFiltros(): Promise<RequerimientosFiltro
     areas: response.areas ?? [],
     responsables: response.responsables ?? [],
     estados_normalizados: response.estados_normalizados ?? [],
-    proveedores: catalogo.proveedores ?? [],
+    proveedores: (catalogo.proveedores ?? []).map((p) => p.proveedor),
   };
 }

@@ -1,0 +1,56 @@
+# ─────────────────────────────────────────────────────────────
+# SECRETOS — nunca deben llegar al repositorio
+# ─────────────────────────────────────────────────────────────
+# El .env de la raíz centraliza credenciales de base de datos.
+# Se lleva al servidor a mano; jamás se versiona.
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ─────────────────────────────────────────────────────────────
+# Python / backend
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ─────────────────────────────────────────────────────────────
+# Node / frontend
+# ─────────────────────────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+*.local
+*.tsbuildinfo
+
+# ─────────────────────────────────────────────────────────────
+# Extractos de datos de producción (pueden contener info sensible)
+# ─────────────────────────────────────────────────────────────
+*.csv
+*.xlsx
+!docs/**/*.csv
+
+# ─────────────────────────────────────────────────────────────
+# Editor / SO
+# ─────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Base del bot RPA (cola, horarios, bitacora) — datos de ejecucion, no codigo
+datos/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm

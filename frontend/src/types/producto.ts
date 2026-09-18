@@ -118,6 +118,36 @@ export interface CatalogoOpcion {
   cantidad: number;
 }
 
+/**
+ * Versión recortada de `Producto` — solo los campos que se muestran en la
+ * tabla — usada para guardar el catálogo COMPLETO (23,000+ productos) en
+ * memoria/localStorage sin acercarse a la cuota del navegador (el objeto
+ * `Producto` completo trae ~90 campos por fila).
+ */
+export interface ProductoResumen {
+  codigo: string;
+  nombre: string | null;
+  familia_nombre: string | null;
+  linea_nombre: string | null;
+  status: string | null;
+  criticidad: string | null;
+  segmento_abc: string | null;
+  proveedor: string | null;
+  stock_actual: number | null;
+  cobertura_actual: number | null;
+  compra_sugerida: number | null;
+  valor_compra_usd: number | null;
+  total_valorizado: number | null;
+  tendencia: string | null;
+  precio_confiabilidad: string | null;
+}
+
+export interface CargaProgresoProductos {
+  paginaActual: number;
+  totalPaginas: number;
+  productosTotales: number;
+}
+
 /** Parámetros aceptados por `GET /api/productos` que el dashboard utiliza. */
 export interface ProductosQuery {
   page: number;
